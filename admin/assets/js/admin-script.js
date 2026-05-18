@@ -96,7 +96,21 @@
       var created = row.dataset.created || '';
 
       /* 1. Status tab */
-      var matchesStatus = (activeFilter === 'all') || (status === activeFilter);
+      var matchesStatus =
+        (
+            activeFilter === 'all'
+        ) ||
+        (
+            activeFilter === 'rejected' &&
+            (
+                status === 'rejected' ||
+                status === 'cancelled' ||
+                status === 'cancel'
+            )
+        ) ||
+        (
+            status === activeFilter
+        );
 
       /* 2. Search */
       var matchesSearch = !searchVal ||
@@ -120,7 +134,13 @@
         var s = (row.dataset.status || '').toLowerCase();
         if (s === 'approved') cntApproved++;
         else if (s === 'pending') cntPending++;
-        else if (s === 'rejected') cntRejected++;
+        else if (
+              s === 'rejected' ||
+              s === 'cancelled' ||
+              s === 'cancel'
+          ){
+              cntRejected++;
+          }
       } else {
         row.classList.add('hidden-row');
       }

@@ -31,7 +31,7 @@ $statsQ = mysqli_query(
         COUNT(*) AS total,
         SUM(CASE WHEN athlete_status = 'Approved' THEN 1 ELSE 0 END) AS approved,
         SUM(CASE WHEN athlete_status = 'Pending'  THEN 1 ELSE 0 END) AS pending,
-        SUM(CASE WHEN athlete_status = 'Rejected' THEN 1 ELSE 0 END) AS rejected
+        SUM(CASE WHEN athlete_status = 'Rejected' OR athlete_status = 'Cancelled' OR athlete_status = 'Cancel' THEN 1 ELSE 0 END) AS rejected
      FROM athletes"
 );
 $stats    = mysqli_fetch_assoc($statsQ);
@@ -198,7 +198,7 @@ $todayDate = date('d M Y');
                 <span class="tab-count"><?php echo $pending; ?></span>
             </button>
             <button class="filter-tab" data-filter="rejected">
-                Rejected
+                Cancelled
                 <span class="tab-count"><?php echo $rejected; ?></span>
             </button>
         </div>
@@ -236,11 +236,41 @@ $todayDate = date('d M Y');
                 <?php while($row = mysqli_fetch_assoc($query)): ?>
 
                 <?php
-                    $statusRaw   = $row['athlete_status'] ?? 'Pending';
+                    $statusRaw = trim($row['athlete_status'] ?? 'Pending');
+
                     $statusLower = strtolower($statusRaw);
-                    $badgeClass  = 'status-badge--pending';
-                    if($statusRaw === 'Approved') $badgeClass = 'status-badge--approved';
-                    if($statusRaw === 'Rejected') $badgeClass = 'status-badge--rejected';
+
+                    $badgeClass = 'status-badge--pending';
+
+                    /* =====================================================
+                    APPROVED
+                    ===================================================== */
+
+                    if(
+                        $statusLower === 'approved'
+                    ){
+
+                        $badgeClass = 'status-badge--approved';
+
+                    }
+
+                    /* =====================================================
+                    REJECTED / CANCELLED
+                    ===================================================== */
+
+                    if(
+                        $statusLower === 'rejected' ||
+                        $statusLower === 'cancelled' ||
+                        $statusLower === 'cancel'
+                    ){
+
+                        $badgeClass = 'status-badge--rejected';
+
+                        /* NORMALIZE STATUS TEXT */
+
+                        $statusRaw = 'Cancelled';
+
+                    }
                 ?>
 
                 <tr class="athlete-row" data-status="<?php echo $statusLower; ?>" data-created="<?php echo htmlspecialchars($row['created_at'] ?? ''); ?>">

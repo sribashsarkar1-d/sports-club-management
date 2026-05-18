@@ -203,6 +203,49 @@
 }
 
 /* ============================================================
+   SUCCESS + LOADING FIX
+   ============================================================ */
+
+.btn-auth-submit.loading{
+
+    pointer-events:none;
+
+    opacity:0.92;
+
+}
+
+.btn-loader{
+
+    width:18px;
+    height:18px;
+
+    border-radius:50%;
+
+    border:2px solid rgba(255,255,255,0.25);
+
+    border-top-color:#ffffff;
+
+    display:inline-block;
+
+    margin-right:10px;
+
+    animation:btnSpin 0.7s linear infinite;
+
+    vertical-align:middle;
+
+}
+
+@keyframes btnSpin{
+
+    to{
+
+        transform:rotate(360deg);
+
+    }
+
+}
+
+/* ============================================================
    KEYFRAMES
    ============================================================ */
 

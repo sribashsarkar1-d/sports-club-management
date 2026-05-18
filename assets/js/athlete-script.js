@@ -257,6 +257,14 @@ input.classList.add(
 const parent =
 input.parentElement;
 
+if(
+parent.querySelector('.dynamic-error')
+){
+
+return;
+
+}
+
 const error =
 document.createElement('span');
 
@@ -367,6 +375,205 @@ JSON.stringify(data)
 
 /*
 =========================================================
+PROFESSIONAL REALTIME AGE CALCULATION
+=========================================================
+*/
+
+function calculateAge(){
+
+if(
+!fields.dob ||
+!fields.age
+){
+
+return false;
+
+}
+
+const dobValue =
+fields.dob.value.trim();
+
+/*
+=========================================================
+EMPTY DOB
+=========================================================
+*/
+
+if(!dobValue){
+
+fields.age.value = '';
+
+removeError(fields.dob);
+
+saveFormData();
+
+return false;
+
+}
+
+/*
+=========================================================
+PARSE DOB
+=========================================================
+*/
+
+const birthDate =
+new Date(dobValue);
+
+if(
+isNaN(birthDate.getTime())
+){
+
+fields.age.value = '';
+
+showError(
+fields.dob,
+'Invalid date of birth'
+);
+
+saveFormData();
+
+return false;
+
+}
+
+/*
+=========================================================
+CURRENT DATE
+=========================================================
+*/
+
+const today =
+new Date();
+
+birthDate.setHours(0,0,0,0);
+
+today.setHours(0,0,0,0);
+
+/*
+=========================================================
+FUTURE DATE CHECK
+=========================================================
+*/
+
+if(birthDate > today){
+
+fields.age.value = '';
+
+showError(
+fields.dob,
+'Future date is not allowed'
+);
+
+saveFormData();
+
+return false;
+
+}
+
+/*
+=========================================================
+EXACT AGE CALCULATION
+LEAP YEAR + BIRTHDAY LOGIC
+=========================================================
+*/
+
+let age =
+today.getFullYear() -
+birthDate.getFullYear();
+
+const currentMonth =
+today.getMonth();
+
+const birthMonth =
+birthDate.getMonth();
+
+const currentDay =
+today.getDate();
+
+const birthDay =
+birthDate.getDate();
+
+if(
+
+currentMonth < birthMonth ||
+
+(
+currentMonth === birthMonth &&
+currentDay < birthDay
+)
+
+){
+
+age--;
+
+}
+
+/*
+=========================================================
+NEGATIVE SAFETY
+=========================================================
+*/
+
+if(age < 0){
+
+fields.age.value = '';
+
+showError(
+fields.dob,
+'Invalid date of birth'
+);
+
+saveFormData();
+
+return false;
+
+}
+
+/*
+=========================================================
+SET AGE
+=========================================================
+*/
+
+fields.age.value =
+age;
+
+/*
+=========================================================
+MINIMUM AGE VALIDATION
+=========================================================
+*/
+
+if(age < 5){
+
+showError(
+fields.dob,
+'Minimum age must be 5 years'
+);
+
+saveFormData();
+
+return false;
+
+}
+
+/*
+=========================================================
+VALID
+=========================================================
+*/
+
+removeError(fields.dob);
+
+saveFormData();
+
+return true;
+
+}
+
+/*
+=========================================================
 RESTORE FORM
 =========================================================
 */
@@ -402,10 +609,6 @@ if(fields.dob)
 fields.dob.value =
 saved.date_of_birth || '';
 
-if(fields.age)
-fields.age.value =
-saved.age || '';
-
 if(fields.bloodGroup)
 fields.bloodGroup.value =
 saved.blood_group || '';
@@ -423,13 +626,20 @@ saved.compressed_photo || '';
 
 }
 
-}
-
 /*
 =========================================================
-RESTORE IMAGE
+AUTO RECALCULATE AGE
 =========================================================
 */
+
+requestAnimationFrame(() => {
+
+calculateAge();
+
+});
+
+}
+
 /*
 =========================================================
 RESTORE IMAGE
@@ -482,7 +692,9 @@ fields.uploadZone.classList.add(
 
 });
 
-}/*
+}
+
+/*
 =========================================================
 AUTO SAVE
 =========================================================
@@ -639,153 +851,16 @@ return true;
 
 /*
 =========================================================
-DOB VALIDATION + AUTO AGE CALCULATION
+DOB VALIDATION
 =========================================================
 */
 
 function validateDOB(){
 
-if(
-!fields.dob ||
-!fields.age
-){
-
-return false;
+return calculateAge();
 
 }
 
-/*
-=========================================================
-EMPTY DOB
-=========================================================
-*/
-
-if(!fields.dob.value){
-
-fields.age.value = '';
-
-showError(
-fields.dob,
-'Select date of birth'
-);
-
-return false;
-
-}
-
-/*
-=========================================================
-CALCULATE AGE
-=========================================================
-*/
-
-const birthDate =
-new Date(fields.dob.value);
-
-const today =
-new Date();
-
-/*
-=========================================================
-INVALID DATE
-=========================================================
-*/
-
-if(
-isNaN(birthDate.getTime())
-){
-
-fields.age.value = '';
-
-showError(
-fields.dob,
-'Invalid date of birth'
-);
-
-return false;
-
-}
-
-let calculatedAge =
-today.getFullYear() -
-birthDate.getFullYear();
-
-const monthDiff =
-today.getMonth() -
-birthDate.getMonth();
-
-if(
-
-monthDiff < 0 ||
-
-(
-monthDiff === 0 &&
-today.getDate() <
-birthDate.getDate()
-)
-
-){
-
-calculatedAge--;
-
-}
-
-/*
-=========================================================
-NEGATIVE SAFETY
-=========================================================
-*/
-
-if(calculatedAge < 0){
-
-fields.age.value = '';
-
-showError(
-fields.dob,
-'Invalid date of birth'
-);
-
-return false;
-
-}
-
-/*
-=========================================================
-SET AGE
-=========================================================
-*/
-
-fields.age.value =
-calculatedAge;
-
-/*
-=========================================================
-MINIMUM AGE VALIDATION
-=========================================================
-*/
-
-if(calculatedAge < 5){
-
-showError(
-fields.dob,
-'Minimum age must be 5 years'
-);
-
-return false;
-
-}
-
-/*
-=========================================================
-VALID
-=========================================================
-*/
-
-removeError(fields.dob);
-
-return true;
-
-}
 function validateBloodGroup(){
 
 if(
@@ -815,12 +890,6 @@ ADDRESS VALIDATION
 
 function validateAddress(){
 
-/*
-=========================================================
-FIELD NOT EXISTS
-=========================================================
-*/
-
 if(
 !fields.address
 ){
@@ -834,12 +903,6 @@ sanitize(
 fields.address.value || ''
 );
 
-/*
-=========================================================
-EMPTY
-=========================================================
-*/
-
 if(value.length < 5){
 
 showError(
@@ -851,17 +914,12 @@ return false;
 
 }
 
-/*
-=========================================================
-VALID
-=========================================================
-*/
-
 removeError(fields.address);
 
 return true;
 
 }
+
 function validatePhoto(){
 
 if(
@@ -883,11 +941,6 @@ return true;
 
 }
 
-/*
-=========================================================
-REVALIDATE RESTORED
-=========================================================
-*/
 /*
 =========================================================
 REVALIDATE RESTORED DATA
@@ -936,12 +989,10 @@ removeError(fields.gender);
 
 if(
 fields.dob &&
-fields.age &&
-fields.dob.value &&
-parseInt(fields.age.value || 0) >= 5
+fields.dob.value
 ){
 
-removeError(fields.dob);
+calculateAge();
 
 }
 
@@ -974,6 +1025,7 @@ removeError(fields.photo);
 }
 
 }
+
 /*
 =========================================================
 IMAGE PROCESSOR
@@ -1021,12 +1073,6 @@ document.createElement(
 
 const ctx =
 canvas.getContext('2d');
-
-/*
-=========================================================
-SAFE SIZE
-=========================================================
-*/
 
 const MAX_DIMENSION = 1600;
 
@@ -1076,12 +1122,6 @@ width,
 height
 );
 
-/*
-=========================================================
-AUTO JPG
-=========================================================
-*/
-
 let quality = 0.9;
 
 let output =
@@ -1089,12 +1129,6 @@ canvas.toDataURL(
 'image/jpeg',
 quality
 );
-
-/*
-=========================================================
-COMPRESS
-=========================================================
-*/
 
 while(
 
@@ -1112,12 +1146,6 @@ quality
 );
 
 }
-
-/*
-=========================================================
-STORAGE SAFETY
-=========================================================
-*/
 
 if(output.length > 900000){
 
@@ -1141,12 +1169,6 @@ fields.preview.style.display =
 'block';
 
 });
-
-/*
-=========================================================
-CLEANUP
-=========================================================
-*/
 
 canvas.width = 1;
 canvas.height = 1;
@@ -1279,40 +1301,81 @@ REALTIME VALIDATION
 
 function setupRealtimeValidation(){
 
-fields.fullName?.addEventListener(
+if(fields.fullName){
+
+fields.fullName.addEventListener(
 'input',
 validateFullName
 );
 
-fields.email?.addEventListener(
+}
+
+if(fields.email){
+
+fields.email.addEventListener(
 'input',
 validateEmail
 );
 
-fields.mobile?.addEventListener(
+}
+
+if(fields.mobile){
+
+fields.mobile.addEventListener(
 'input',
 validateMobile
 );
 
-fields.gender?.addEventListener(
+}
+
+if(fields.gender){
+
+fields.gender.addEventListener(
 'change',
 validateGender
 );
 
-fields.dob?.addEventListener(
-'change',
-validateDOB
+}
+
+/*
+=========================================================
+DOB REALTIME EVENTS
+=========================================================
+*/
+
+if(fields.dob){
+
+fields.dob.addEventListener(
+'input',
+calculateAge,
+{ passive:true }
 );
 
-fields.bloodGroup?.addEventListener(
+fields.dob.addEventListener(
+'change',
+calculateAge,
+{ passive:true }
+);
+
+}
+
+if(fields.bloodGroup){
+
+fields.bloodGroup.addEventListener(
 'change',
 validateBloodGroup
 );
 
-fields.address?.addEventListener(
+}
+
+if(fields.address){
+
+fields.address.addEventListener(
 'input',
 validateAddress
 );
+
+}
 
 }
 
@@ -1503,83 +1566,15 @@ restoreImage();
 
 setupAutoSave();
 
-/*
-=========================================================
-REALTIME VALIDATION
-=========================================================
-*/
+setupRealtimeValidation();
 
-function setupRealtimeValidation(){
-
-if(fields.fullName){
-
-fields.fullName.addEventListener(
-'input',
-validateFullName
-);
-
-}
-
-if(fields.email){
-
-fields.email.addEventListener(
-'input',
-validateEmail
-);
-
-}
-
-if(fields.mobile){
-
-fields.mobile.addEventListener(
-'input',
-validateMobile
-);
-
-}
-
-if(fields.gender){
-
-fields.gender.addEventListener(
-'change',
-validateGender
-);
-
-}
-
-if(fields.dob){
-
-fields.dob.addEventListener(
-'change',
-validateDOB
-);
-
-}
-
-if(fields.bloodGroup){
-
-fields.bloodGroup.addEventListener(
-'change',
-validateBloodGroup
-);
-
-}
-
-if(fields.address){
-
-fields.address.addEventListener(
-'input',
-validateAddress
-);
-
-}
-
-}
 setupImageUpload();
 
 setupSubmit();
 
 revalidateRestoredData();
+
+calculateAge();
 
 resetSubmitButton();
 
