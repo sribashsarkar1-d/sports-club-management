@@ -1,0 +1,377 @@
+/* ============================================================
+   PREMIUM LOGIN ERROR SYSTEM
+   MODERN ANIMATED VALIDATION
+   ============================================================ */
+
+/* ============================================================
+   ERROR BOX
+   ============================================================ */
+
+.auth-error-box{
+
+    position:relative;
+
+    display:flex;
+    align-items:center;
+
+    gap:16px;
+
+    width:100%;
+
+    padding:18px 20px;
+
+    margin-bottom:22px;
+
+    border-radius:22px;
+
+    background:
+    linear-gradient(
+        135deg,
+        rgba(255,71,87,0.16),
+        rgba(255,0,85,0.12)
+    );
+
+    border:
+    1px solid rgba(255,80,120,0.28);
+
+    backdrop-filter:blur(18px);
+
+    box-shadow:
+    0 10px 40px rgba(255,50,80,0.16),
+    0 0 0 1px rgba(255,255,255,0.05) inset;
+
+    overflow:hidden;
+
+    opacity:0;
+
+    visibility:hidden;
+
+    pointer-events:none;
+
+    transform:
+    translateY(20px)
+    scale(0.96);
+
+    z-index:20;
+
+}
+
+/* ============================================================
+   ACTIVE ERROR
+   ============================================================ */
+
+.auth-error-box.show{
+
+    visibility:visible;
+
+    pointer-events:auto;
+
+    animation:
+    authErrorReveal 0.65s cubic-bezier(0.22,1,0.36,1) forwards;
+
+}
+
+/* ============================================================
+   AUTO HIDE
+   ============================================================ */
+
+.auth-error-box.hide{
+
+    animation:
+    authErrorHide 0.45s ease forwards;
+
+}
+
+/* ============================================================
+   ERROR ICON
+   ============================================================ */
+
+.auth-error-icon{
+
+    width:52px;
+    height:52px;
+
+    min-width:52px;
+
+    border-radius:16px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ff4d6d,
+        #ff0055
+    );
+
+    color:#ffffff;
+
+    box-shadow:
+    0 10px 25px rgba(255,0,85,0.32);
+
+    animation:
+    errorIconPulse 2s infinite;
+
+}
+
+.auth-error-icon svg{
+
+    width:26px;
+    height:26px;
+
+}
+
+/* ============================================================
+   ERROR CONTENT
+   ============================================================ */
+
+.auth-error-content{
+
+    flex:1;
+
+}
+
+.auth-error-title{
+
+    display:block;
+
+    font-size:15px;
+    font-weight:800;
+
+    letter-spacing:0.03em;
+
+    color:#ff2b55;
+
+    margin-bottom:4px;
+
+}
+
+.auth-error-content p{
+
+    margin:0;
+
+    font-size:14px;
+
+    line-height:1.6;
+
+    color:#7f1d35;
+
+}
+
+/* ============================================================
+   ERROR INPUT EFFECT
+   ============================================================ */
+
+.auth-input.error{
+
+    border-color:#ff3d71 !important;
+
+    box-shadow:
+    0 0 0 4px rgba(255,61,113,0.10),
+    0 0 22px rgba(255,61,113,0.15);
+
+    animation:
+    inputShake 0.45s ease;
+
+}
+
+/* ============================================================
+   INPUT GLOW
+   ============================================================ */
+
+.auth-input.error:focus{
+
+    border-color:#ff0055 !important;
+
+    box-shadow:
+    0 0 0 4px rgba(255,0,85,0.12),
+    0 0 28px rgba(255,0,85,0.22);
+
+}
+
+/* ============================================================
+   INPUT WRAPPER
+   ============================================================ */
+
+.input-wrapper.error{
+
+    animation:
+    wrapperShake 0.45s ease;
+
+}
+
+/* ============================================================
+   KEYFRAMES
+   ============================================================ */
+
+@keyframes authErrorReveal{
+
+    0%{
+
+        opacity:0;
+
+        transform:
+        translateY(20px)
+        scale(0.96);
+
+    }
+
+    60%{
+
+        opacity:1;
+
+        transform:
+        translateY(-4px)
+        scale(1.01);
+
+    }
+
+    100%{
+
+        opacity:1;
+
+        transform:
+        translateY(0)
+        scale(1);
+
+    }
+
+}
+
+@keyframes authErrorHide{
+
+    from{
+
+        opacity:1;
+
+        transform:
+        translateY(0)
+        scale(1);
+
+    }
+
+    to{
+
+        opacity:0;
+
+        transform:
+        translateY(-10px)
+        scale(0.96);
+
+    }
+
+}
+
+@keyframes inputShake{
+
+    0%{ transform:translateX(0); }
+
+    20%{ transform:translateX(-6px); }
+
+    40%{ transform:translateX(6px); }
+
+    60%{ transform:translateX(-4px); }
+
+    80%{ transform:translateX(4px); }
+
+    100%{ transform:translateX(0); }
+
+}
+
+@keyframes wrapperShake{
+
+    0%{ transform:translateX(0); }
+
+    20%{ transform:translateX(-4px); }
+
+    40%{ transform:translateX(4px); }
+
+    60%{ transform:translateX(-2px); }
+
+    80%{ transform:translateX(2px); }
+
+    100%{ transform:translateX(0); }
+
+}
+
+@keyframes errorIconPulse{
+
+    0%{
+
+        transform:scale(1);
+
+        box-shadow:
+        0 10px 25px rgba(255,0,85,0.30);
+
+    }
+
+    50%{
+
+        transform:scale(1.06);
+
+        box-shadow:
+        0 12px 35px rgba(255,0,85,0.42);
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+        box-shadow:
+        0 10px 25px rgba(255,0,85,0.30);
+
+    }
+
+}
+
+/* ============================================================
+   MOBILE OPTIMIZATION
+   ============================================================ */
+
+@media(max-width:768px){
+
+    .auth-error-box{
+
+        padding:16px;
+
+        border-radius:18px;
+
+    }
+
+    .auth-error-icon{
+
+        width:46px;
+        height:46px;
+
+        min-width:46px;
+
+    }
+
+    .auth-error-icon svg{
+
+        width:22px;
+        height:22px;
+
+    }
+
+}
+
+/* ============================================================
+   REDUCE MOTION
+   ============================================================ */
+
+@media(prefers-reduced-motion:reduce){
+
+    .auth-error-box,
+    .auth-input,
+    .input-wrapper{
+
+        animation:none !important;
+        transition:none !important;
+
+    }
+
+}

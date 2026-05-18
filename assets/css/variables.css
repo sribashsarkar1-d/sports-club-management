@@ -1,0 +1,98 @@
+/* ============================================================
+   SPORTS CLUB MANAGEMENT — DESIGN TOKENS
+   Modern Athletic Palette: Navy · Cyan · Slate
+   ============================================================ */
+
+:root {
+
+  /* ── Brand Colors ─────────────────────────────────── */
+  --clr-navy:        #000052;
+  --clr-navy-deep:   #00003a;
+  --clr-navy-mid:    #000078;
+  --clr-navy-muted:  rgba(0, 0, 82, 0.06);
+  --clr-cyan:        #0ff0fc;
+  --clr-cyan-soft:   rgba(15, 240, 252, 0.14);
+  --clr-cyan-dim:    rgba(15, 240, 252, 0.07);
+
+  /* ── Neutrals ─────────────────────────────────────── */
+  --clr-white:       #ffffff;
+  --clr-offwhite:    #F2F0EC;
+  --clr-surface:     #f8f9fb;
+  --clr-gray-50:     #fafafa;
+  --clr-gray-100:    #f0f1f4;
+  --clr-gray-200:    #e4e5ea;
+  --clr-gray-300:    #cfd0d7;
+  --clr-gray-400:    #9a9baa;
+  --clr-graphite:    #41424C;
+  --clr-text:        #1a1a2e;
+
+  /* ── State Colors ─────────────────────────────────── */
+  --clr-success:     #00cc77;
+  --clr-success-bg:  rgba(0, 204, 119, 0.10);
+  --clr-success-bdr: rgba(0, 204, 119, 0.28);
+  --clr-error:       #ff3366;
+  --clr-error-bg:    rgba(255, 51, 102, 0.08);
+  --clr-error-bdr:   rgba(255, 51, 102, 0.25);
+  --clr-warning:     #FFB800;
+  --clr-warning-bg:  rgba(255, 184, 0, 0.10);
+  --clr-warning-bdr: rgba(255, 184, 0, 0.30);
+  --clr-pending:     #f59e0b;
+
+  /* ── Spacing Scale ────────────────────────────────── */
+  --sp-1:   4px;
+  --sp-2:   8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  20px;
+  --sp-6:  24px;
+  --sp-8:  32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+  --sp-20: 80px;
+
+  /* ── Border Radius ────────────────────────────────── */
+  --r-xs:   4px;
+  --r-sm:   8px;
+  --r-md:  12px;
+  --r-lg:  20px;
+  --r-xl:  28px;
+  --r-2xl: 40px;
+  --r-pill: 9999px;
+
+  /* ── Shadows ──────────────────────────────────────── */
+  --shadow-xs:   0 1px 3px  rgba(0, 0, 30, 0.07);
+  --shadow-sm:   0 2px 8px  rgba(0, 0, 30, 0.10);
+  --shadow-md:   0 4px 20px rgba(0, 0, 30, 0.13);
+  --shadow-lg:   0 8px 36px rgba(0, 0, 30, 0.18);
+  --shadow-xl:   0 16px 56px rgba(0, 0, 30, 0.22);
+  --shadow-cyan: 0 0 28px   rgba(15, 240, 252, 0.38);
+  --shadow-navy: 0 6px 24px rgba(0, 0, 82, 0.32);
+
+  /* ── Transitions ──────────────────────────────────── */
+  --ease-fast:    150ms ease;
+  --ease-smooth:  300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring:  450ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-decel:   350ms cubic-bezier(0.0, 0.0, 0.2, 1);
+
+  /* ── Type Scale ───────────────────────────────────── */
+  --text-xs:   0.75rem;    /* 12px */
+  --text-sm:   0.875rem;   /* 14px */
+  --text-base: 1rem;       /* 16px */
+  --text-lg:   1.125rem;   /* 18px */
+  --text-xl:   1.25rem;    /* 20px */
+  --text-2xl:  1.5rem;     /* 24px */
+  --text-3xl:  1.875rem;   /* 30px */
+  --text-4xl:  2.25rem;    /* 36px */
+  --text-5xl:  3rem;       /* 48px */
+  --text-6xl:  3.75rem;    /* 60px */
+
+  /* ── Z-Index ──────────────────────────────────────── */
+  --z-base:    1;
+  --z-above:   10;
+  --z-nav:     100;
+  --z-sticky:  200;
+  --z-overlay: 500;
+  --z-modal:   1000;
+
+}
