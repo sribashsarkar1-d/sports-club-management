@@ -41,6 +41,11 @@ if (!isset($_POST['admin_login'])) {
 
 }
 
+if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+    header("Location: login.php?error=csrf_failed");
+    exit;
+}
+
 /*
 =====================================================
 GET FORM DATA
@@ -167,6 +172,7 @@ $_SESSION['admin_id'] = $admin['admin_id'];
 $_SESSION['admin_name'] = $admin['full_name'];
 
 $_SESSION['admin_email'] = $admin['email'];
+$_SESSION['admin_role'] = $admin['role'];
 
 $_SESSION['admin_login_time'] = time();
 

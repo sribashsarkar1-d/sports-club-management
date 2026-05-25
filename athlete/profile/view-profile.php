@@ -2,13 +2,27 @@
 include '../../config/session.php';
 include '../../config/database.php';
 
-if(!isset($_GET['application_no'])){
-  header("Location: ../registration/register.php");
+if(!isset($_SESSION['athlete_logged_in'])){
+  header("Location: ../auth/login.php");
   exit();
 }
 
-$application_no = mysqli_real_escape_string($conn, $_GET['application_no']);
-$query = mysqli_query($conn, "SELECT * FROM athletes WHERE registration_no='$application_no'");
+$application_no = mysqli_real_escape_string($conn, $_SESSION['athlete_application_no']);
+$sql = "
+SELECT 
+    a.*, 
+    g.father_name, g.mother_name, g.guardian_name, g.guardian_mobile, g.relation_with_athlete AS relationship,
+    addr.state, addr.district, addr.city, addr.pin_code, addr.village, addr.home_address,
+    c.club_name, c.coach_name, c.coach_mobile, c.state_association,
+    comp.competition_name, comp.age_group, comp.weight_category, comp.competition_level AS participation_level
+FROM athletes a
+LEFT JOIN guardians g ON a.athlete_id = g.athlete_id
+LEFT JOIN addresses addr ON a.athlete_id = addr.athlete_id
+LEFT JOIN clubs c ON a.athlete_id = c.athlete_id
+LEFT JOIN competitions comp ON a.athlete_id = comp.athlete_id
+WHERE a.registration_no = '$application_no'
+";
+$query = mysqli_query($conn, $sql);
 
 if(mysqli_num_rows($query) == 0){
   header("Location: ../registration/register.php");
@@ -16,7 +30,7 @@ if(mysqli_num_rows($query) == 0){
 }
 
 $athlete = mysqli_fetch_assoc($query);
-$status = $athlete['athlete_status'];
+$status = $athlete['athlete_status'] ?? $athlete['status'] ?? 'Pending';
 $statusClass = "pending";
 if($status == "Approved") $statusClass = "approved";
 if($status == "Rejected") $statusClass = "rejected";
@@ -39,9 +53,12 @@ if($status == "Rejected") $statusClass = "rejected";
       <div class="topbar-name">Sports Club <span>Management</span></div>
     </div>
     <nav class="topbar-nav">
-      <a href="dashboard.php?application_no=<?php echo urlencode($athlete['registration_no']); ?>" class="topbar-link">Dashboard</a>
-      <a href="view-profile.php?application_no=<?php echo urlencode($athlete['registration_no']); ?>" class="topbar-link active">View Profile</a>
-      <a href="../status-check.php" class="topbar-link">Status Check</a>
+      <a href="dashboard.php" class="topbar-link">Dashboard</a>
+      <a href="view-profile.php" class="topbar-link active">Profile</a>
+      <a href="invoices.php" class="topbar-link">Invoices</a>
+      <a href="documents.php" class="topbar-link">Documents</a>
+      <a href="tournaments.php" class="topbar-link">Tournaments</a>
+      <a href="../auth/logout.php" class="topbar-link">Log Out</a>
     </nav>
   </header>
 
@@ -75,10 +92,10 @@ if($status == "Rejected") $statusClass = "rejected";
     <div class="info-table-card anim-fade-up delay-150">
       <div class="info-table-head"><span class="info-table-head-title">Guardian Information</span></div>
       <div class="info-table-body">
-        <div class="info-row"><span class="info-key">Father's Name</span><span class="info-val"><?php echo htmlspecialchars($athlete['father_name']); ?></span></div>
-        <div class="info-row"><span class="info-key">Mother's Name</span><span class="info-val"><?php echo htmlspecialchars($athlete['mother_name']); ?></span></div>
-        <div class="info-row"><span class="info-key">Guardian Mobile</span><span class="info-val"><?php echo htmlspecialchars($athlete['guardian_mobile']); ?></span></div>
-        <div class="info-row"><span class="info-key">Relationship</span><span class="info-val"><?php echo htmlspecialchars($athlete['relationship']); ?></span></div>
+        <div class="info-row"><span class="info-key">Father's Name</span><span class="info-val"><?php echo htmlspecialchars($athlete['father_name'] ?? '—'); ?></span></div>
+        <div class="info-row"><span class="info-key">Mother's Name</span><span class="info-val"><?php echo htmlspecialchars($athlete['mother_name'] ?? '—'); ?></span></div>
+        <div class="info-row"><span class="info-key">Guardian Mobile</span><span class="info-val"><?php echo htmlspecialchars($athlete['guardian_mobile'] ?? '—'); ?></span></div>
+        <div class="info-row"><span class="info-key">Relationship</span><span class="info-val"><?php echo htmlspecialchars($athlete['relationship'] ?? '—'); ?></span></div>
       </div>
     </div>
 
@@ -86,12 +103,12 @@ if($status == "Rejected") $statusClass = "rejected";
     <div class="info-table-card anim-fade-up delay-200">
       <div class="info-table-head"><span class="info-table-head-title">Address</span></div>
       <div class="info-table-body">
-        <div class="info-row"><span class="info-key">State</span><span class="info-val"><?php echo htmlspecialchars($athlete['state']); ?></span></div>
-        <div class="info-row"><span class="info-key">District</span><span class="info-val"><?php echo htmlspecialchars($athlete['district']); ?></span></div>
-        <div class="info-row"><span class="info-key">City</span><span class="info-val"><?php echo htmlspecialchars($athlete['city']); ?></span></div>
-        <div class="info-row"><span class="info-key">PIN Code</span><span class="info-val"><?php echo htmlspecialchars($athlete['pin_code']); ?></span></div>
+        <div class="info-row"><span class="info-key">State</span><span class="info-val"><?php echo htmlspecialchars($athlete['state'] ?? '—'); ?></span></div>
+        <div class="info-row"><span class="info-key">District</span><span class="info-val"><?php echo htmlspecialchars($athlete['district'] ?? '—'); ?></span></div>
+        <div class="info-row"><span class="info-key">City</span><span class="info-val"><?php echo htmlspecialchars($athlete['city'] ?? '—'); ?></span></div>
+        <div class="info-row"><span class="info-key">PIN Code</span><span class="info-val"><?php echo htmlspecialchars($athlete['pin_code'] ?? '—'); ?></span></div>
         <div class="info-row"><span class="info-key">Village</span><span class="info-val"><?php echo htmlspecialchars($athlete['village'] ?? '—'); ?></span></div>
-        <div class="info-row"><span class="info-key">Home Address</span><span class="info-val"><?php echo htmlspecialchars($athlete['home_address']); ?></span></div>
+        <div class="info-row"><span class="info-key">Home Address</span><span class="info-val"><?php echo htmlspecialchars($athlete['home_address'] ?? '—'); ?></span></div>
       </div>
     </div>
 
@@ -99,10 +116,10 @@ if($status == "Rejected") $statusClass = "rejected";
     <div class="info-table-card anim-fade-up delay-250">
       <div class="info-table-head"><span class="info-table-head-title">Club &amp; Competition</span></div>
       <div class="info-table-body">
-        <div class="info-row"><span class="info-key">Club Name</span><span class="info-val"><?php echo htmlspecialchars($athlete['club_name']); ?></span></div>
-        <div class="info-row"><span class="info-key">Coach Name</span><span class="info-val"><?php echo htmlspecialchars($athlete['coach_name']); ?></span></div>
-        <div class="info-row"><span class="info-key">Coach Mobile</span><span class="info-val"><?php echo htmlspecialchars($athlete['coach_mobile']); ?></span></div>
-        <div class="info-row"><span class="info-key">State Association</span><span class="info-val"><?php echo htmlspecialchars($athlete['state_association']); ?></span></div>
+        <div class="info-row"><span class="info-key">Club Name</span><span class="info-val"><?php echo htmlspecialchars($athlete['club_name'] ?? '—'); ?></span></div>
+        <div class="info-row"><span class="info-key">Coach Name</span><span class="info-val"><?php echo htmlspecialchars($athlete['coach_name'] ?? '—'); ?></span></div>
+        <div class="info-row"><span class="info-key">Coach Mobile</span><span class="info-val"><?php echo htmlspecialchars($athlete['coach_mobile'] ?? '—'); ?></span></div>
+        <div class="info-row"><span class="info-key">State Association</span><span class="info-val"><?php echo htmlspecialchars($athlete['state_association'] ?? '—'); ?></span></div>
         <div class="info-row"><span class="info-key">Sport</span><span class="info-val"><?php echo htmlspecialchars($athlete['competition_name'] ?? '—'); ?></span></div>
         <div class="info-row"><span class="info-key">Age Group</span><span class="info-val"><?php echo htmlspecialchars($athlete['age_group'] ?? '—'); ?></span></div>
         <div class="info-row"><span class="info-key">Weight Category</span><span class="info-val"><?php echo htmlspecialchars($athlete['weight_category'] ?? '—'); ?></span></div>
@@ -114,7 +131,10 @@ if($status == "Rejected") $statusClass = "rejected";
       <a href="../../athlete/download-pdf.php?application_no=<?php echo urlencode($athlete['registration_no']); ?>" class="btn-navy">
         &#11015;&nbsp; Download PDF
       </a>
-      <a href="dashboard.php?application_no=<?php echo urlencode($athlete['registration_no']); ?>" class="btn-ghost" style="color:var(--clr-graphite); border-color:var(--clr-border);">
+        <a href="edit-profile.php" class="btn-navy" style="text-decoration:none;">
+          <i class="bi bi-pencil-square"></i> Edit Profile
+        </a>
+      <a href="dashboard.php" class="btn-ghost" style="color:var(--clr-graphite); border-color:var(--clr-border);">
         &larr; Dashboard
       </a>
     </div>

@@ -1,0 +1,759 @@
+/* ============================================================
+   FIXED RIGHT SIDE ANIMATION SYSTEM
+   Applied Animation Stability + Performance Fixes
+   DO NOT CHANGE YOUR EXISTING STRUCTURE
+   ============================================================ */
+
+/* ============================================================
+   GLOBAL PERFORMANCE FIX
+   ============================================================ */
+
+/* FIX:
+   Prevent animation flicker, hidden layers,
+   transform conflicts, and repaint lag
+*/
+
+.auth-wrapper *,
+.auth-wrapper *::before,
+.auth-wrapper *::after{
+
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
+
+    transform-style:preserve-3d;
+
+    will-change:
+    transform,
+    opacity;
+
+}
+
+/* ============================================================
+   FIX:
+   RIGHT PANEL MAIN ANIMATION
+   ============================================================ */
+
+.auth-panel--form{
+
+    position:relative;
+    overflow:hidden;
+
+    z-index:2;
+
+    opacity:0;
+
+    animation:
+    formPanelReveal 1s cubic-bezier(0.22,1,0.36,1) forwards;
+
+}
+
+/* ============================================================
+   FIX:
+   FORM CONTAINER
+   ============================================================ */
+
+.form-container{
+
+    position:relative;
+    z-index:5;
+
+    opacity:0;
+
+    transform:
+    translateY(40px)
+    translateZ(0);
+
+    animation:
+    formContainerUp 1s cubic-bezier(0.22,1,0.36,1) 0.15s forwards;
+
+}
+
+/* ============================================================
+   FIX:
+   HEADER ANIMATIONS
+   ============================================================ */
+
+.form-header{
+
+    opacity:0;
+
+    transform:
+    translateY(25px)
+    scale(0.98);
+
+    animation:
+    smoothFadeUp 0.9s ease forwards;
+
+    animation-delay:0.35s;
+
+}
+
+.form-header h2{
+
+    opacity:0;
+
+    transform:
+    translateY(20px);
+
+    animation:
+    titleReveal 0.8s cubic-bezier(0.22,1,0.36,1) forwards;
+
+    animation-delay:0.55s;
+
+}
+
+.form-header p{
+
+    opacity:0;
+
+    transform:
+    translateY(20px);
+
+    animation:
+    textFade 0.8s ease forwards;
+
+    animation-delay:0.7s;
+
+}
+
+.form-badge{
+
+    opacity:0;
+
+    transform:
+    translateY(-10px)
+    scale(0.95);
+
+    animation:
+    badgeReveal 0.7s ease forwards;
+
+    animation-delay:0.2s;
+
+}
+
+/* ============================================================
+   FIX:
+   INPUT GROUP ANIMATIONS
+   ============================================================ */
+
+.auth-form-group{
+
+    opacity:0;
+
+    transform:
+    translateY(24px);
+
+    animation:
+    fieldReveal 0.7s cubic-bezier(0.22,1,0.36,1) forwards;
+
+}
+
+.auth-form-group:nth-child(1){
+
+    animation-delay:0.9s;
+
+}
+
+.auth-form-group:nth-child(2){
+
+    animation-delay:1.05s;
+
+}
+
+/* ============================================================
+   FIX:
+   INPUT FIELD ANIMATION
+   ============================================================ */
+
+.auth-input{
+
+    transform:translateZ(0);
+
+    transition:
+    border-color 0.35s ease,
+    box-shadow 0.35s ease,
+    background 0.35s ease,
+    transform 0.35s ease;
+
+}
+
+/* FIX:
+   Smooth hover/focus animation
+*/
+
+.auth-input:hover{
+
+    transform:
+    translateY(-1px)
+    translateZ(0);
+
+}
+
+.auth-input:focus{
+
+    transform:
+    translateY(-2px)
+    scale(1.01)
+    translateZ(0);
+
+}
+
+/* ============================================================
+   FIX:
+   PASSWORD ICON ANIMATION
+   ============================================================ */
+
+.input-eye-btn{
+
+    transition:
+    transform 0.35s ease,
+    opacity 0.35s ease,
+    color 0.35s ease;
+
+    transform:translateZ(0);
+
+}
+
+.input-eye-btn:hover{
+
+    transform:
+    scale(1.12)
+    rotate(4deg);
+
+}
+
+.input-eye-btn svg{
+
+    transition:
+    transform 0.35s ease,
+    opacity 0.35s ease;
+
+}
+
+.input-eye-btn:hover svg{
+
+    transform:
+    scale(1.08);
+
+}
+
+/* ============================================================
+   FIX:
+   SUBMIT BUTTON ANIMATION
+   ============================================================ */
+
+.btn-auth-submit{
+
+    opacity:0;
+
+    transform:
+    translateY(20px);
+
+    animation:
+    buttonReveal 0.8s cubic-bezier(0.22,1,0.36,1) forwards;
+
+    animation-delay:1.2s;
+
+    transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease,
+    opacity 0.35s ease;
+
+    position:relative;
+
+    overflow:hidden;
+
+}
+
+/* FIX:
+   Hover lift without transform conflict
+*/
+
+.btn-auth-submit:hover{
+
+    transform:
+    translateY(-4px)
+    translateZ(0);
+
+}
+
+/* ============================================================
+   FIX:
+   BUTTON SHINE EFFECT
+   ============================================================ */
+
+.btn-auth-submit::before{
+
+    content:'';
+
+    position:absolute;
+
+    top:0;
+    left:-120%;
+
+    width:120%;
+    height:100%;
+
+    background:
+    linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,0.28),
+        transparent
+    );
+
+    transition:left 0.7s ease;
+
+}
+
+.btn-auth-submit:hover::before{
+
+    left:120%;
+
+}
+
+/* ============================================================
+   FIX:
+   SEPARATOR ANIMATION
+   ============================================================ */
+
+.form-sep{
+
+    opacity:0;
+
+    transform:
+    translateY(15px);
+
+    animation:
+    separatorReveal 0.7s ease forwards;
+
+    animation-delay:1.35s;
+
+}
+
+.form-sep-line{
+
+    transform:scaleX(0);
+
+    transform-origin:center;
+
+    animation:
+    lineGrow 0.7s ease forwards;
+
+    animation-delay:1.5s;
+
+}
+
+/* ============================================================
+   FIX:
+   FOOTER LINK ANIMATION
+   ============================================================ */
+
+.form-footer-link{
+
+    opacity:0;
+
+    transform:
+    translateY(12px);
+
+    animation:
+    footerFade 0.7s ease forwards;
+
+    animation-delay:1.65s;
+
+}
+
+.form-footer-link a{
+
+    position:relative;
+
+    transition:
+    color 0.35s ease;
+
+}
+
+.form-footer-link a::after{
+
+    content:'';
+
+    position:absolute;
+
+    left:0;
+    bottom:-2px;
+
+    width:0;
+    height:2px;
+
+    background:currentColor;
+
+    transition:width 0.35s ease;
+
+}
+
+.form-footer-link a:hover::after{
+
+    width:100%;
+
+}
+
+/* ============================================================
+   FIX:
+   FLOATING MICRO ANIMATION
+   ============================================================ */
+
+.auth-panel--form::before{
+
+    content:'';
+
+    position:absolute;
+
+    inset:0;
+
+    pointer-events:none;
+
+    background:
+    radial-gradient(
+        circle at 20% 20%,
+        rgba(15,240,252,0.05),
+        transparent 40%
+    );
+
+    animation:
+    floatingGlow 8s ease-in-out infinite;
+
+}
+
+/* ============================================================
+   KEYFRAMES
+   ============================================================ */
+
+@keyframes formPanelReveal{
+
+    from{
+
+        opacity:0;
+
+        transform:
+        translateX(50px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+        translateX(0);
+
+    }
+
+}
+
+@keyframes formContainerUp{
+
+    from{
+
+        opacity:0;
+
+        transform:
+        translateY(40px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+        translateY(0);
+
+    }
+
+}
+
+@keyframes smoothFadeUp{
+
+    from{
+
+        opacity:0;
+
+        transform:
+        translateY(25px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+        translateY(0);
+
+    }
+
+}
+
+@keyframes titleReveal{
+
+    from{
+
+        opacity:0;
+
+        transform:
+        translateY(24px);
+
+        letter-spacing:0.08em;
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+        translateY(0);
+
+        letter-spacing:normal;
+
+    }
+
+}
+
+@keyframes textFade{
+
+    from{
+
+        opacity:0;
+
+        transform:
+        translateY(18px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+        translateY(0);
+
+    }
+
+}
+
+@keyframes badgeReveal{
+
+    from{
+
+        opacity:0;
+
+        transform:
+        scale(0.92)
+        translateY(-8px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+        scale(1)
+        translateY(0);
+
+    }
+
+}
+
+@keyframes fieldReveal{
+
+    from{
+
+        opacity:0;
+
+        transform:
+        translateY(24px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+        translateY(0);
+
+    }
+
+}
+
+@keyframes buttonReveal{
+
+    from{
+
+        opacity:0;
+
+        transform:
+        translateY(20px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+        translateY(0);
+
+    }
+
+}
+
+@keyframes separatorReveal{
+
+    from{
+
+        opacity:0;
+
+        transform:
+        translateY(10px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+        translateY(0);
+
+    }
+
+}
+
+@keyframes lineGrow{
+
+    from{
+
+        transform:scaleX(0);
+
+    }
+
+    to{
+
+        transform:scaleX(1);
+
+    }
+
+}
+
+@keyframes footerFade{
+
+    from{
+
+        opacity:0;
+
+        transform:
+        translateY(12px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+        translateY(0);
+
+    }
+
+}
+
+@keyframes floatingGlow{
+
+    0%{
+
+        transform:
+        translate3d(0,0,0)
+        scale(1);
+
+        opacity:0.6;
+
+    }
+
+    50%{
+
+        transform:
+        translate3d(10px,-10px,0)
+        scale(1.05);
+
+        opacity:1;
+
+    }
+
+    100%{
+
+        transform:
+        translate3d(0,0,0)
+        scale(1);
+
+        opacity:0.6;
+
+    }
+
+}
+
+/* ============================================================
+   FIX:
+   PREVENT OVERFLOW ANIMATION CUT
+   ============================================================ */
+
+.auth-panel--form,
+.form-container,
+.form-header,
+.auth-form-group,
+.btn-auth-submit{
+
+    overflow:visible;
+
+}
+
+/* ============================================================
+   FIX:
+   RESPONSIVE ANIMATION STABILITY
+   ============================================================ */
+
+@media(max-width:991px){
+
+    .auth-panel--form{
+
+        animation-duration:0.85s;
+
+    }
+
+    .form-container{
+
+        animation-duration:0.85s;
+
+    }
+
+}
+
+/* ============================================================
+   FIX:
+   REDUCE MOTION SUPPORT
+   ============================================================ */
+
+@media(prefers-reduced-motion:reduce){
+
+    *,
+    *::before,
+    *::after{
+
+        animation-duration:0.01ms !important;
+        animation-iteration-count:1 !important;
+        transition-duration:0.01ms !important;
+
+    }
+
+}

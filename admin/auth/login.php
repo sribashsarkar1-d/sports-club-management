@@ -1,3 +1,9 @@
+<?php
+include '../../config/session.php';
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -168,6 +174,7 @@
 
             <!-- Login Form — logic unchanged -->
             <form action="login-action.php" method="POST" novalidate>
+                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
                 <div class="auth-form-group">
                     <label class="auth-label" for="login-email">Email Address</label>

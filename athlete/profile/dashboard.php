@@ -2,13 +2,22 @@
 include '../../config/session.php';
 include '../../config/database.php';
 
-if(!isset($_GET['application_no'])){
-  header("Location: ../registration/register.php");
+if(!isset($_SESSION['athlete_logged_in'])){
+  header("Location: ../auth/login.php");
   exit();
 }
 
-$application_no = mysqli_real_escape_string($conn, $_GET['application_no']);
-$query = mysqli_query($conn, "SELECT * FROM athletes WHERE registration_no='$application_no'");
+$application_no = mysqli_real_escape_string($conn, $_SESSION['athlete_application_no']);
+$sql = "
+SELECT a.*, 
+       c.club_name, c.coach_name, 
+       comp.competition_name, comp.age_group, comp.weight_category, comp.competition_level AS participation_level
+FROM athletes a
+LEFT JOIN clubs c ON a.athlete_id = c.athlete_id
+LEFT JOIN competitions comp ON a.athlete_id = comp.athlete_id
+WHERE a.registration_no='$application_no'
+";
+$query = mysqli_query($conn, $sql);
 
 if(mysqli_num_rows($query) == 0){
   header("Location: ../registration/register.php");
@@ -16,10 +25,20 @@ if(mysqli_num_rows($query) == 0){
 }
 
 $athlete = mysqli_fetch_assoc($query);
-$status = $athlete['athlete_status'];
+$status = $athlete['athlete_status'] ?? $athlete['status'] ?? 'Pending';
 $statusClass = "pending";
 if($status == "Approved") $statusClass = "approved";
 if($status == "Rejected") $statusClass = "rejected";
+
+$athlete_id = $athlete['athlete_id'];
+$invoiceQ = mysqli_query($conn, "SELECT status FROM invoices WHERE athlete_id='$athlete_id' ORDER BY invoice_id DESC LIMIT 1");
+$isPaid = false;
+if ($invoiceQ && mysqli_num_rows($invoiceQ) > 0) {
+    $inv = mysqli_fetch_assoc($invoiceQ);
+    if (strtolower($inv['status']) === 'paid') {
+        $isPaid = true;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -40,9 +59,12 @@ if($status == "Rejected") $statusClass = "rejected";
       <div class="topbar-name">Sports Club <span>Management</span></div>
     </div>
     <nav class="topbar-nav">
-      <a href="dashboard.php?application_no=<?php echo urlencode($athlete['registration_no']); ?>" class="topbar-link active">Dashboard</a>
-      <a href="view-profile.php?application_no=<?php echo urlencode($athlete['registration_no']); ?>" class="topbar-link">View Profile</a>
-      <a href="../status-check.php" class="topbar-link">Status Check</a>
+      <a href="dashboard.php" class="topbar-link active">Dashboard</a>
+      <a href="view-profile.php" class="topbar-link">Profile</a>
+      <a href="invoices.php" class="topbar-link">Invoices</a>
+      <a href="documents.php" class="topbar-link">Documents</a>
+      <a href="tournaments.php" class="topbar-link">Tournaments</a>
+      <a href="../auth/logout.php" class="topbar-link">Log Out</a>
     </nav>
   </header>
 
@@ -88,7 +110,12 @@ if($status == "Rejected") $statusClass = "rejected";
         <h2 class="profile-hero-name"><?php echo htmlspecialchars($athlete['full_name']); ?></h2>
         <p class="profile-hero-sub"><?php echo htmlspecialchars($athlete['email']); ?> &nbsp;&middot;&nbsp; <?php echo htmlspecialchars($athlete['mobile']); ?></p>
         <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:16px;">
-          <a href="view-profile.php?application_no=<?php echo urlencode($athlete['registration_no']); ?>" class="btn-navy" style="padding:10px 24px; font-size:0.9rem;">
+          <?php if($isPaid): ?>
+          <a href="../../athlete/download-id-card.php?application_no=<?php echo urlencode($athlete['registration_no']); ?>" class="btn-cyan" style="padding:10px 24px; font-size:0.9rem; border: none; font-weight: bold; text-decoration: none;">
+            Download ID Card
+          </a>
+          <?php endif; ?>
+          <a href="view-profile.php" class="btn-navy" style="padding:10px 24px; font-size:0.9rem;">
             View Full Profile
           </a>
           <a href="../../athlete/download-pdf.php?application_no=<?php echo urlencode($athlete['registration_no']); ?>" class="btn-ghost" style="padding:10px 24px; font-size:0.9rem; color:var(--clr-graphite); border-color:var(--clr-border);">

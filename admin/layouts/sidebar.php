@@ -40,32 +40,32 @@
             <i class="bi bi-people"></i>
             <span>All Athletes</span>
         </a>
-
-        <a href="../dashboard/pending-athletes.php" class="sidebar-nav-link">
-            <i class="bi bi-clock-history"></i>
-            <span>Pending Athletes</span>
-        </a>
-
-        <a href="../dashboard/approved-athletes.php" class="sidebar-nav-link">
-            <i class="bi bi-check-circle"></i>
-            <span>Approved Athletes</span>
-        </a>
-
-        <a href="../dashboard/rejected-athletes.php" class="sidebar-nav-link">
-            <i class="bi bi-x-circle"></i>
-            <span>Rejected Athletes</span>
-        </a>
-
-        <a href="../dashboard/activity-logs.php" class="sidebar-nav-link">
-            <i class="bi bi-clock"></i>
-            <span>Activity Logs</span>
-        </a>
-
-        <a href="../dashboard/notifications.php" class="sidebar-nav-link">
-            <i class="bi bi-bell"></i>
-            <span>Notifications</span>
-        </a>
         -->
+
+        <a href="../clubs/index.php" class="sidebar-nav-link <?php echo (($activePage ?? '') === 'clubs') ? 'active' : ''; ?>">
+            <i class="bi bi-building"></i>
+            <span>Clubs & Coaches</span>
+        </a>
+
+        <a href="../tournaments/index.php" class="sidebar-nav-link <?php echo (($activePage ?? '') === 'tournaments') ? 'active' : ''; ?>">
+            <i class="bi bi-trophy"></i>
+            <span>Tournaments</span>
+        </a>
+
+        <a href="../documents/index.php" class="sidebar-nav-link <?php echo (($activePage ?? '') === 'documents') ? 'active' : ''; ?>">
+            <i class="bi bi-file-earmark-check"></i>
+            <span>Document Verification</span>
+        </a>
+
+        <a href="../payments/index.php" class="sidebar-nav-link <?php echo (($activePage ?? '') === 'payments') ? 'active' : ''; ?>">
+            <i class="bi bi-credit-card"></i>
+            <span>Payments & Invoices</span>
+        </a>
+
+        <a href="../settings/roles.php" class="sidebar-nav-link <?php echo (($activePage ?? '') === 'roles') ? 'active' : ''; ?>">
+            <i class="bi bi-shield-lock"></i>
+            <span>Roles & Access</span>
+        </a>
 
     </nav>
 

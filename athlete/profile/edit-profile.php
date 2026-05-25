@@ -2,13 +2,23 @@
 include '../../config/session.php';
 include '../../config/database.php';
 
-if(!isset($_GET['application_no'])){
-  header("Location: ../registration/register.php");
+if(!isset($_SESSION['athlete_logged_in'])){
+  header("Location: ../auth/login.php");
   exit();
 }
 
-$application_no = mysqli_real_escape_string($conn, $_GET['application_no']);
-$query = mysqli_query($conn, "SELECT * FROM athletes WHERE registration_no='$application_no'");
+$application_no = mysqli_real_escape_string($conn, $_SESSION['athlete_application_no']);
+$sql = "
+SELECT 
+    a.*, 
+    addr.home_address,
+    c.club_name, c.coach_name, c.coach_mobile
+FROM athletes a
+LEFT JOIN addresses addr ON a.athlete_id = addr.athlete_id
+LEFT JOIN clubs c ON a.athlete_id = c.athlete_id
+WHERE a.registration_no='$application_no'
+";
+$query = mysqli_query($conn, $sql);
 
 if(mysqli_num_rows($query) == 0){
   header("Location: ../registration/register.php");
@@ -27,20 +37,42 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])){
   $coach_name = mysqli_real_escape_string($conn, $_POST['coach_name']);
   $coach_mobile = mysqli_real_escape_string($conn, $_POST['coach_mobile']);
 
-  $update = mysqli_query($conn,
-    "UPDATE athletes SET
-      mobile='$mobile', email='$email', home_address='$home_addr',
-      club_name='$club_name', coach_name='$coach_name', coach_mobile='$coach_mobile'
-    WHERE registration_no='$application_no'"
-  );
+  $athlete_id = $athlete['athlete_id'];
 
-  if($update){
-    $updateSuccess = true;
-    // Refresh athlete data
-    $q2 = mysqli_query($conn, "SELECT * FROM athletes WHERE registration_no='$application_no'");
-    $athlete = mysqli_fetch_assoc($q2);
-  } else {
-    $updateError = "Update failed. Please try again.";
+  mysqli_begin_transaction($conn);
+  try {
+      $update1 = mysqli_query($conn,
+        "UPDATE athletes SET mobile='$mobile', email='$email' WHERE registration_no='$application_no'"
+      );
+
+      // Check if address exists
+      $check_addr = mysqli_query($conn, "SELECT id FROM addresses WHERE athlete_id='$athlete_id'");
+      if(mysqli_num_rows($check_addr) > 0){
+          $update2 = mysqli_query($conn, "UPDATE addresses SET home_address='$home_addr' WHERE athlete_id='$athlete_id'");
+      } else {
+          $update2 = mysqli_query($conn, "INSERT INTO addresses (athlete_id, home_address) VALUES ('$athlete_id', '$home_addr')");
+      }
+
+      // Check if club exists
+      $check_club = mysqli_query($conn, "SELECT id FROM clubs WHERE athlete_id='$athlete_id'");
+      if(mysqli_num_rows($check_club) > 0){
+          $update3 = mysqli_query($conn, "UPDATE clubs SET club_name='$club_name', coach_name='$coach_name', coach_mobile='$coach_mobile' WHERE athlete_id='$athlete_id'");
+      } else {
+          $update3 = mysqli_query($conn, "INSERT INTO clubs (athlete_id, club_name, coach_name, coach_mobile) VALUES ('$athlete_id', '$club_name', '$coach_name', '$coach_mobile')");
+      }
+
+      if($update1 && $update2 && $update3){
+        mysqli_commit($conn);
+        $updateSuccess = true;
+        // Refresh athlete data
+        $q2 = mysqli_query($conn, $sql);
+        $athlete = mysqli_fetch_assoc($q2);
+      } else {
+        throw new Exception("Update query failed");
+      }
+  } catch (Exception $e) {
+      mysqli_rollback($conn);
+      $updateError = "Update failed. Please try again.";
   }
 }
 ?>
@@ -62,9 +94,12 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])){
       <div class="topbar-name">Sports Club <span>Management</span></div>
     </div>
     <nav class="topbar-nav">
-      <a href="dashboard.php?application_no=<?php echo urlencode($athlete['registration_no']); ?>" class="topbar-link">Dashboard</a>
-      <a href="view-profile.php?application_no=<?php echo urlencode($athlete['registration_no']); ?>" class="topbar-link">View Profile</a>
-      <a href="../status-check.php" class="topbar-link">Status Check</a>
+      <a href="dashboard.php" class="topbar-link">Dashboard</a>
+      <a href="view-profile.php" class="topbar-link">Profile</a>
+      <a href="invoices.php" class="topbar-link">Invoices</a>
+      <a href="documents.php" class="topbar-link">Documents</a>
+      <a href="tournaments.php" class="topbar-link">Tournaments</a>
+      <a href="../auth/logout.php" class="topbar-link">Log Out</a>
     </nav>
   </header>
 
@@ -106,22 +141,22 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])){
             </div>
             <div class="fg">
               <label>Club Name</label>
-              <input type="text" name="club_name" class="sc-input" value="<?php echo htmlspecialchars($athlete['club_name']); ?>" required>
+              <input type="text" name="club_name" class="sc-input" value="<?php echo htmlspecialchars($athlete['club_name'] ?? ''); ?>" required>
             </div>
             <div class="fg">
               <label>Coach Name</label>
-              <input type="text" name="coach_name" class="sc-input" value="<?php echo htmlspecialchars($athlete['coach_name']); ?>" required>
+              <input type="text" name="coach_name" class="sc-input" value="<?php echo htmlspecialchars($athlete['coach_name'] ?? ''); ?>" required>
             </div>
             <div class="fg">
               <label>Coach Mobile</label>
-              <input type="text" name="coach_mobile" id="coach_mobile" class="sc-input" value="<?php echo htmlspecialchars($athlete['coach_mobile']); ?>" maxlength="10" required>
+              <input type="text" name="coach_mobile" id="coach_mobile" class="sc-input" value="<?php echo htmlspecialchars($athlete['coach_mobile'] ?? ''); ?>" maxlength="10" required>
               <span class="invalid-feedback">Enter a valid 10-digit number</span>
             </div>
           </div>
 
           <div class="fg">
             <label>Home Address</label>
-            <textarea name="home_address" class="sc-input" rows="3" style="resize:vertical; min-height:80px;"><?php echo htmlspecialchars($athlete['home_address']); ?></textarea>
+            <textarea name="home_address" class="sc-input" rows="3" style="resize:vertical; min-height:80px;"><?php echo htmlspecialchars($athlete['home_address'] ?? ''); ?></textarea>
           </div>
 
           <div style="display:flex; gap:12px; margin-top:8px; flex-wrap:wrap;">
